@@ -1,0 +1,65 @@
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model NewsPage {
+  id           Int          @id @default(autoincrement())
+  date         String
+  image        String
+  titleId      Int?         // FK to PageCategory
+  title        PageCategory? @relation(fields: [titleId], references: [id])
+  mapData      MapData[]
+  newspapers   NewspaperPages[]
+  lastModified String?
+}
+
+model Newspaper {
+  id             Int              @id @default(autoincrement())
+  date           String
+  titleId        Int              // FK to NewspaperCategory
+  title          NewspaperCategory @relation(fields: [titleId], references: [id])
+  newspaperPages NewspaperPages[]
+}
+
+model NewspaperPages {
+  newsPageId  Int
+  newspaperId Int
+
+  newsPage   NewsPage   @relation(fields: [newsPageId], references: [id])
+  newspaper  Newspaper  @relation(fields: [newspaperId], references: [id])
+
+  @@id([newsPageId, newspaperId])
+}
+
+model NewspaperCategory {
+  id         Int          @id @default(autoincrement())
+  title      String
+  slug       String       @unique
+  newspapers Newspaper[]
+}
+
+model PageCategory {
+  id        Int         @id @default(autoincrement())
+  title     String
+  slug      String      @unique
+  newsPages NewsPage[]
+}
+
+model MapData {
+  id           Int      @id @default(autoincrement())
+  coordinates  String
+  title        String?
+  croppedImage String?
+  newsPageId   Int
+  newsPage     NewsPage @relation(fields: [newsPageId], references: [id])
+}

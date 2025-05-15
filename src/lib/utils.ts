@@ -1,6 +1,24 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
+}
+
+export async function handleError<T>(promise: Promise<T>): Promise<T> {
+  try {
+    return await promise;
+  } catch (error: any) {
+    // Optional: Customize error logging
+    console.error("Database operation failed:", error);
+
+    // Optional: Normalize known Prisma errors
+    if (error.code === "P2002") {
+      throw new Error(
+        `Unique constraint failed on the field: ${error.meta?.target}`,
+      );
+    }
+
+    throw new Error(error.message || "Unexpected error occurred");
+  }
 }
