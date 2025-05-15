@@ -1,13 +1,19 @@
-import AdminSidebar from "@/components/admin/AdminSidebar";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import React, { ReactNode } from "react";
+import { headers } from "next/headers";
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ children }: { children: ReactNode }) {
+  const pathname = (await headers()).get("x-next-pathname") as string;
+
   return (
-    <main className="flex">
-      <div>
-        <AdminSidebar />
-      </div>
-      <div>{children}</div>
-    </main>
+    <SidebarProvider>
+      <AdminSidebar pathname={pathname} />
+
+      <main className="w-full">
+        <SidebarTrigger />
+        <div className="px-8 ">{children}</div>
+      </main>
+    </SidebarProvider>
   );
 }
