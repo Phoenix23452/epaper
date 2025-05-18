@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -11,56 +10,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model NewsPages {
-  id           Int              @id @default(autoincrement())
+model NewsPage {
+  id           Int           @id @default(autoincrement())
   date         String
   image        String
+  thumbnail    String
   titleId      Int? // FK to PageCategory
-  title        PageCategory?    @relation(fields: [titleId], references: [id])
+  title        PageCategory? @relation(fields: [titleId], references: [id])
   mapData      MapData[]
-  newspapers   NewspaperPages[]
+  newspapers   Newspaper[]   @relation("newspapers-pages")
   lastModified String?
+
+  @@map("news-pages")
 }
 
-model Newspapers {
+model Newspaper {
   id             Int               @id @default(autoincrement())
   date           String
   titleId        Int // FK to NewspaperCategory
   title          NewspaperCategory @relation(fields: [titleId], references: [id])
-  newspaperPages NewspaperPages[]
+  newspaperPages NewsPage[]        @relation("newspapers-pages")
+
+  @@map("newspapers")
 }
 
-model NewspaperPages {
-  newsPageId  Int
-  newspaperId Int
+// model NewspaperPages {
+//   newsPageId  Int
+//   newspaperId Int
+//   newsPage    NewsPage  @relation(fields: [newsPageId], references: [id])
+//   newspaper   Newspaper @relation(fields: [newspaperId], references: [id])
 
-  newsPage  NewsPages  @relation(fields: [newsPageId], references: [id])
-  newspaper Newspapers @relation(fields: [newspaperId], references: [id])
-
-  @@id([newsPageId, newspaperId])
-}
+//   @@id([newsPageId, newspaperId])
+//   @@map("newspaper-pages")
+// }
 
 model NewspaperCategory {
-  id         Int          @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   title      String
-  slug       String       @unique
+  slug       String      @unique
   order      Int
-  newspapers Newspapers[]
+  newspapers Newspaper[]
+
+  @@map("newspaper-categories")
 }
 
 model PageCategory {
-  id        Int         @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   title     String
-  slug      String      @unique
+  slug      String     @unique
   order     Int
-  newsPages NewsPages[]
+  newsPages NewsPage[]
+
+  @@map("page-categories")
 }
 
 model MapData {
-  id           Int       @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   coordinates  String
   title        String?
   croppedImage String?
   newsPageId   Int
-  newsPage     NewsPages @relation(fields: [newsPageId], references: [id])
+  newsPage     NewsPage @relation(fields: [newsPageId], references: [id])
+
+  @@map("map-data")
 }
