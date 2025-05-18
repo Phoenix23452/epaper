@@ -3,7 +3,7 @@
 import { NextRequest } from "next/server";
 import { parseQueryParams } from "@/lib/queryParser"; // Parses query parameters like where/include/take/orderBy
 import { schemaRegistry } from "@/lib/validators"; // Central registry for all Zod validation schemas
-import { NextError, NextSuccess } from "./apiResponce"; // Utility functions to standardize success/error API responses
+import { NextError, NextSuccess } from "./apiResponse"; // Utility functions to standardize success/error API responses
 
 /**
  * Creates list-level API handlers (GET for list, POST for creation)
@@ -55,12 +55,13 @@ export function createAPIHandlers<T>(repo: any, schemaKey: string) {
 
         // Validate request body using Zod
         const parsed = schema.safeParse(body);
+        console.log(parsed);
         if (!parsed.success) {
           return NextError("Validation failed", parsed.error.format(), 400);
         }
 
         // Save the validated data
-        const created = await repo.create({ data: parsed.data });
+        const created = await repo.create(parsed.data);
         return NextSuccess("Created successfully", created, 201);
       } catch (err: any) {
         return NextError("Failed to create record", err.message || err, 500);
@@ -78,10 +79,13 @@ export function createItemAPIHandlers<T>(repo: any, schemaKey: string) {
     /**
      * GET handler - fetches a single record by ID
      */
-    GET: async (_: NextRequest, { params }: { params: { id: string } }) => {
+    GET: async (
+      _: NextRequest,
+      { params }: { params: Promise<{ id: string }> },
+    ) => {
       try {
-        const id = Number(params.id);
-        const data = await repo.getById(id);
+        const { id } = await params;
+        const data = await repo.getById(Number(id));
         return NextSuccess("Fetched successfully", data);
       } catch (err: any) {
         return NextError("Failed to fetch item", err.message || err, 500);
@@ -91,9 +95,12 @@ export function createItemAPIHandlers<T>(repo: any, schemaKey: string) {
     /**
      * PUT handler - updates a record after validating input using Zod schema
      */
-    PUT: async (req: NextRequest, { params }: { params: { id: string } }) => {
+    PUT: async (
+      req: NextRequest,
+      { params }: { params: Promise<{ id: string }> },
+    ) => {
       try {
-        const id = Number(params.id);
+        const { id } = await params;
         const body = await req.json();
         const schema = schemaRegistry[schemaKey];
 
@@ -110,7 +117,7 @@ export function createItemAPIHandlers<T>(repo: any, schemaKey: string) {
           return NextError("Validation failed", parsed.error.format(), 400);
         }
 
-        const updated = await repo.update(id, parsed.data);
+        const updated = await repo.update(Number(id), parsed.data);
         return NextSuccess("Updated successfully", updated);
       } catch (err: any) {
         return NextError("Failed to update item", err.message || err, 500);
@@ -120,10 +127,13 @@ export function createItemAPIHandlers<T>(repo: any, schemaKey: string) {
     /**
      * DELETE handler - deletes a single record by ID
      */
-    DELETE: async (_: NextRequest, { params }: { params: { id: string } }) => {
+    DELETE: async (
+      _: NextRequest,
+      { params }: { params: Promise<{ id: string }> },
+    ) => {
       try {
-        const id = Number(params.id);
-        const deleted = await repo.delete(id);
+        const { id } = await params;
+        const deleted = await repo.delete(Number(id));
 
         return NextSuccess("Deleted successfully", deleted);
       } catch (err: any) {
