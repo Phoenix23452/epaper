@@ -1,4 +1,4 @@
-// app/api/page-categories/route.ts
+// app/api/news-pages/[id]/route.ts
 import { createAPIHandlers } from "@/lib/apiHandler";
 import NewsPageRepository from "@/repos/NewsPageRepsitory";
 

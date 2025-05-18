@@ -1,4 +1,4 @@
-// app/api/page-categories/route.ts
+// app/api/newspaper-categories/[id]/route.ts
 import { createAPIHandlers } from "@/lib/apiHandler";
 import NewspaperCategoryRepository from "@/repos/NewpaperCategoryRepsitory";
 const repo = new NewspaperCategoryRepository();

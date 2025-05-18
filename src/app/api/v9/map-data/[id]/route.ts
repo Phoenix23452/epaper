@@ -1,30 +1,11 @@
-// app/api/page-categories/[id]/route.ts
-import { NextRequest, NextResponse } from "next/server";
+// app/api/map-data/[id]/route.ts
 import MapDataRepository from "@/repos/MapDataRepsitory";
+import { createItemAPIHandlers } from "@/lib/apiHandler";
 
 const repo = new MapDataRepository();
 
-export async function GET(
-  _: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const data = await repo.getById(Number(params.id));
-  return NextResponse.json(data);
-}
+const handlers = createItemAPIHandlers(repo, "mapData");
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const body = await req.json();
-  const updated = await repo.update(Number(params.id), body);
-  return NextResponse.json(updated);
-}
-
-export async function DELETE(
-  _: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const deleted = await repo.delete(Number(params.id));
-  return NextResponse.json(deleted);
-}
+export const GET = handlers.GET;
+export const PUT = handlers.PUT;
+export const DELETE = handlers.DELETE;

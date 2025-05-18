@@ -1,30 +1,10 @@
-// app/api/page-categories/[id]/route.ts
+// app/api/newspapers[id]/route.ts
+import { createItemAPIHandlers } from "@/lib/apiHandler";
 import NewspaperRepository from "@/repos/NewspaperRepsitory";
-import { NextRequest, NextResponse } from "next/server";
 
 const repo = new NewspaperRepository();
+const handlers = createItemAPIHandlers(repo, "newspaper");
 
-export async function GET(
-  _: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const data = await repo.getById(Number(params.id));
-  return NextResponse.json(data);
-}
-
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const body = await req.json();
-  const updated = await repo.update(Number(params.id), body);
-  return NextResponse.json(updated);
-}
-
-export async function DELETE(
-  _: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const deleted = await repo.delete(Number(params.id));
-  return NextResponse.json(deleted);
-}
+export const GET = handlers.GET;
+export const PUT = handlers.PUT;
+export const DELETE = handlers.DELETE;

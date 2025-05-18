@@ -7,6 +7,6 @@ import { categorySchema } from "./category";
 export const schemaRegistry: Record<string, z.ZodSchema<any>> = {
   category: categorySchema,
   mapData: mapDataSchema,
-  newsPages: newsPageSchema,
+  newsPage: newsPageSchema,
   newspaper: newspaperSchema,
 };
