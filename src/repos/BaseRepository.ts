@@ -1,6 +1,6 @@
 import { type PrismaClient } from "@prisma/client/extension";
 const DEFAULT_ORDER_BY = {
-  id: "desc",
+  id: "asc",
 };
 
 const MAX_RECORDS_LIMIT = 100;

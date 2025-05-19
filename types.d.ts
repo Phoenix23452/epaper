@@ -1,16 +1,15 @@
-type PageCategory = {
+type BaseCategory = {
   id: number;
   title: string;
   slug: string;
-  order: number;
+  order?: number;
+};
+
+type PageCategory = BaseCategory & {
   newsPages?: NewsPage[];
 };
 
-type NewspaperCategory = {
-  id: number;
-  title: string;
-  slug: string;
-  order: number;
+type NewspaperCategory = BaseCategory & {
   newspapers?: Newspaper[];
 };
 

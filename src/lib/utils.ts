@@ -22,3 +22,12 @@ export async function handleError<T>(promise: Promise<T>): Promise<T> {
     throw new Error(error.message || "Unexpected error occurred");
   }
 }
+// lib/utils/slugify.ts
+export function slugify(input: string) {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "") // remove non-word characters
+    .replace(/\s+/g, "-") // replace spaces with hyphens
+    .replace(/--+/g, "-"); // remove multiple dashes
+}

@@ -1,5 +1,5 @@
-// app/api/age-categories/[id]/route.ts
-import PageCategoryRepository from "@/repos/NewpaperCategoryRepsitory";
+// app/api/page-categories/[id]/route.ts
+import PageCategoryRepository from "@/repos/PageCategoryRepsitory";
 import { createItemAPIHandlers } from "@/lib/apiHandler";
 
 const repo = new PageCategoryRepository();

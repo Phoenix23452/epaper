@@ -48,7 +48,7 @@ model NewspaperCategory {
   id         Int         @id @default(autoincrement())
   title      String
   slug       String      @unique
-  order      Int
+  order      Int         @default(0)
   newspapers Newspaper[]
 
   @@map("newspaper-categories")
@@ -58,7 +58,7 @@ model PageCategory {
   id        Int        @id @default(autoincrement())
   title     String
   slug      String     @unique
-  order     Int
+  order     Int        @default(0)
   newsPages NewsPage[]
 
   @@map("page-categories")
