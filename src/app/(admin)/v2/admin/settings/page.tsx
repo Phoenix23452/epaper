@@ -16,7 +16,7 @@ export default function Page() {
           Manage Categories
         </CardTitle>
         <Tabs defaultValue="newspage" className="w-full">
-          <TabsList className="w-full h-10 ">
+          <TabsList className="w-full h-10  mt-8 mb-6">
             <TabsTrigger value="newspage">Newpage Categories</TabsTrigger>
             <TabsTrigger value="newspaper">Newpage Categories</TabsTrigger>
           </TabsList>
