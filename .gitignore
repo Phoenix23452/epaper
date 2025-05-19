@@ -19,7 +19,7 @@
 
 
 #Prisma things
-/generated
+/prisma/app/
 /prisma/migrations
 # production
 /build
