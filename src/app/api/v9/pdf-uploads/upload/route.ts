@@ -24,7 +24,9 @@ export async function POST(req: NextRequest) {
       uuid,
       thumbnails: result.thumbnails.map((thumb: any) => ({
         page: thumb.page,
-        thumbnailUrl: thumb.thumbnailUrl.replace("/tmp", ""), // frontend uses relative path
+        thumbnailUrl: `/api/v9/tmp?file=${encodeURIComponent(
+          thumb.thumbnailUrl.replace("/tmp/", ""),
+        )}`,
       })),
     });
   } catch (err: any) {

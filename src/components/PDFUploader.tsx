@@ -17,8 +17,11 @@ type ThumbnailData = {
   page: number;
   thumbnailUrl: string;
 };
+type Props = {
+  date: Date | undefined;
+};
 
-export default function PDFUploader() {
+export default function PDFUploader({ date }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uuid, setUuid] = useState<string | null>(null);
@@ -126,7 +129,7 @@ export default function PDFUploader() {
           </button>
         </DialogTrigger>
 
-        <DialogContent className="max-w-3xl">
+        <DialogContent className=" sm:max-w-6xl w-full max-h-[90vh]">
           <DialogTitle>Upload PDF & Select Thumbnails</DialogTitle>
           <DialogDescription>
             Upload your PDF file to generate thumbnails of each page.
@@ -147,22 +150,24 @@ export default function PDFUploader() {
           )}
 
           {!loading && thumbnails.length > 0 && (
-            <div className="grid grid-cols-3 gap-4 my-4 max-h-[400px] overflow-y-auto">
+            <div className="grid grid-cols-5 gap-4 my-4 max-h-[300px] overflow-y-scroll">
               {thumbnails.map(({ page, thumbnailUrl }) => (
                 <Card
                   key={page}
-                  className={`relative cursor-pointer border ${
+                  className={`relative py-0 overflow-hidden w-fit h-64  cursor-pointer border ${
                     selectedPages.has(page)
                       ? "border-blue-600"
                       : "border-transparent"
                   }`}
                   onClick={() => toggleSelect(page)}
                 >
-                  <img
-                    src={thumbnailUrl}
-                    alt={`Page ${page}`}
-                    className="object-cover h-32 w-full"
-                  />
+                  <div className="w-44 ">
+                    <img
+                      src={thumbnailUrl}
+                      alt={`Page ${page}`}
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={(e) => {

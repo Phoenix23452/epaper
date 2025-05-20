@@ -5,7 +5,15 @@ import path from "path";
 export class PdfService {
   static runPdfToImagesWorker(uuid: string, pdfBuffer: Buffer): Promise<any> {
     return new Promise((resolve, reject) => {
-      const worker = new Worker(path.resolve("src/workers/pdfProcessor.ts"), {
+      // Use absolute path to compiled worker
+      const workerPath = path.join(
+        process.cwd(),
+        "dist",
+        "workers",
+        "pdfProcessor.js",
+      );
+
+      const worker = new Worker(workerPath, {
         workerData: { uuid, pdfBuffer },
       });
 

@@ -1,5 +1,6 @@
 "use client";
 import AdminContainer from "@/components/admin/AdminContainer";
+import TmpCleaner from "@/components/admin/TmpCleaner";
 import { DatePicker } from "@/components/DatePicker";
 import PDFUploader from "@/components/PDFUploader";
 import {
@@ -29,19 +30,27 @@ export default function Page() {
         />
       }
     >
-      <CardHeader>
-        <CardTitle className="text-2xl font-medium">Available Pages</CardTitle>
-        <CardDescription>
-          Upload PDF or drag pages to create a newspaper
-        </CardDescription>
-        <Separator className="my-6" />
-
-        <CardContent>
-          <>
-            <PDFUploader />
-          </>
-        </CardContent>
+      <CardHeader className="my-auto">
+        <div className="flex justify-between">
+          <div>
+            <CardTitle className="text-2xl font-medium">
+              Available Pages
+            </CardTitle>
+            <CardDescription>
+              Upload PDF or drag pages to create a newspaper
+            </CardDescription>
+          </div>
+          {/* :TODO  */}
+          <TmpCleaner />
+        </div>
       </CardHeader>
+      <Separator className="my-6" />
+
+      <CardContent>
+        <>
+          <PDFUploader date={selectedDate} />
+        </>
+      </CardContent>
     </AdminContainer>
   );
 }

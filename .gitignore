@@ -21,6 +21,8 @@
 #Prisma things
 src/prisma/app/
 src/prisma/migrations
+
+/public/media/*
 # production
 /build
 

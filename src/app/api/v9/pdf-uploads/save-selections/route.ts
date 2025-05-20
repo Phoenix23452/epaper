@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
       date,
       pages,
     );
+    console.log(movedFiles);
 
     for (const file of movedFiles) {
       await repo.create({

@@ -20,7 +20,7 @@ model NewsPage {
   title        PageCategory? @relation(fields: [titleId], references: [id])
   mapData      MapData[]
   newspapers   Newspaper[]   @relation("newspapers-pages")
-  lastModified String?
+  lastModified DateTime      @updatedAt
 
   @@map("news-pages")
 }
