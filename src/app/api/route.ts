@@ -1,8 +1,7 @@
-export const revalidate = 60
- 
+import { NextSuccess } from "@/lib/apiResponse";
+
 export async function GET() {
-  const data = await fetch('https://api.vercel.app/blog')
-  const posts = await data.json()
- 
-  return Response.json(posts)
+  return NextSuccess("YOU ARE SUCCEDD FOR GETTING HELLO", {
+    greetings: "Hello World",
+  });
 }

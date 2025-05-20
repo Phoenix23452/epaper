@@ -19,8 +19,8 @@
 
 
 #Prisma things
-/prisma/app/
-/prisma/migrations
+src/prisma/app/
+src/prisma/migrations
 # production
 /build
 

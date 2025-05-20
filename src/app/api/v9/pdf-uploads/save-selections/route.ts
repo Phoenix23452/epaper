@@ -1,47 +1,41 @@
-// File: /app/api/v9/pdf-uploads/save-selections/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+// src/app/api/v9/pdf-uploads/save-selections/route.ts
+import { NextRequest } from "next/server";
+import { FileService } from "@/services/FileService";
+import NewsPageRepository from "@/repos/NewsPageRepsitory";
+import { NextError, NextSuccess } from "@/lib/apiResponse";
 
 export async function POST(req: NextRequest) {
+  const { uuid, date, pages } = await req.json();
+
+  const repo = new NewsPageRepository();
+
+  if (!uuid || !date || !Array.isArray(pages)) {
+    return NextError("Invalid input", "Missing uuid, date, or pages[]", 400);
+  }
+
   try {
-    const { selected, date }: { selected: string[]; date: string } =
-      await req.json();
+    const movedFiles: NewsPage[] = FileService.moveSelectedPages(
+      uuid,
+      date,
+      pages,
+    );
 
-    const baseMediaPath = path.join(process.cwd(), "public", "media", date);
-    const imagesPath = path.join(baseMediaPath, "images");
-    const thumbsPath = path.join(imagesPath, "thumbnails");
-
-    await fs.mkdir(imagesPath, { recursive: true });
-    await fs.mkdir(thumbsPath, { recursive: true });
-
-    const saved: string[] = [];
-
-    for (const tempThumbUrl of selected) {
-      const decodedPath = decodeURIComponent(tempThumbUrl.split("file=")[1]);
-      const fileName = uuidv4()+ ".png";
-
-      const targetPath = path.join(thumbsPath, fileName);
-
-      // Move file to final thumbnails folder
-      await fs.copyFile(decodedPath, targetPath);
-
-      // Here you could also move the full image if needed (we'd store mapping between them)
-      // For now, we just save thumbnails as required.
-
-      saved.push(`/media/${date}/images/thumbnails/${fileName}`);
-
-      // Clean up temp file
-      await fs.unlink(decodedPath);
+    for (const file of movedFiles) {
+      await repo.create({
+        date,
+        image: file.image,
+        thumbnail: file.thumbnail,
+      });
     }
 
-    // Example: Save metadata to DB (pseudo code)
-    // await db.insert("pdf_images", saved.map((url, i) => ({ order: i+1, url, date })))
+    return NextSuccess("Pages saved successfully");
+  } catch (err: any) {
+    console.error("Error in save-selections:", err);
 
-    return NextResponse.json({ success: true, saved });
-  } catch (e) {
-    console.error("Save error:", e);
-    return NextResponse.json({ error: "Save failed" }, { status: 500 });
+    return NextError(
+      "Failed to save selections",
+      err?.stack || err.toString(),
+      500,
+    );
   }
 }
