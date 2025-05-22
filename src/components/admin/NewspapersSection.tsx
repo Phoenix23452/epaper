@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { hooks } from "@/lib/redux/genratedHooks";
+import { toast } from "sonner";
 
 type Newspaper = {
   id: number;
@@ -28,14 +29,7 @@ type Newspaper = {
 
 type PageCategory = { id: number; title: string };
 
-export default function NewspapersSection({
-  date,
-  refetchNewsPages,
-}: {
-  date: string;
-
-  refetchNewsPages: () => void;
-}) {
+export default function NewspapersSection({ date }: { date: string }) {
   const {
     useGetAllNewspaperQuery,
     useGetAllNewspaperCategoryQuery,
@@ -77,14 +71,14 @@ export default function NewspapersSection({
 
   // Create newspaper handler
   const handleCreate = async () => {
-    if (!formData.titleId) return alert("Select title");
+    if (!formData.titleId) return toast.info("Select title");
     // One title per date allowed: check if exists
     const exists = data?.data?.some(
       (n: Newspaper) =>
         n.titleId === formData.titleId && n.date === formData.date,
     );
     if (exists) {
-      alert("Newspaper with this title already exists for the date");
+      toast.info("Newspaper with this title already exists for the date");
       return;
     }
     await createNewspaper({
@@ -117,7 +111,6 @@ export default function NewspapersSection({
     ];
     await updateNewspaper({ id: newspaperId, newspaperPages: updatedPageIds });
     await refetch();
-    refetchNewsPages();
   };
 
   // Remove page from newspaper
@@ -129,27 +122,27 @@ export default function NewspapersSection({
       .map((p: any) => p.id);
     await updateNewspaper({ id: newspaperId, newspaperPages: updatedPageIds });
     await refetch();
-    refetchNewsPages();
   };
 
   return (
     <section className="mt-8">
       <div className="flex items-center justify-between mb-4">
         <Select
-          value={filterTitleId}
+          value={formData.titleId === "" ? "" : String(formData.titleId)}
           onValueChange={(v) => setFilterTitleId(v === "" ? "" : Number(v))}
         >
           <SelectTrigger className="w-52">
             <span>
               {filterTitleId
-                ? categoriesData?.data?.find((c) => c.id === filterTitleId)
-                    ?.title
+                ? categoriesData?.data?.find(
+                    (c: BaseCategory) => c.id === filterTitleId,
+                  )?.title
                 : "Filter by title"}
             </span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="">All Titles</SelectItem>
-            {categoriesData?.data?.map((cat) => (
+            {categoriesData?.data?.map((cat: NewspaperCategory) => (
               <SelectItem key={cat.id} value={String(cat.id)}>
                 {cat.title}
               </SelectItem>
@@ -178,7 +171,7 @@ export default function NewspapersSection({
 
             <label className="block text-sm font-medium">Title</label>
             <Select
-              value={formData.titleId}
+              value={formData.titleId === "" ? "" : String(formData.titleId)}
               onValueChange={(v) =>
                 setFormData({ ...formData, titleId: Number(v) })
               }
@@ -187,13 +180,13 @@ export default function NewspapersSection({
                 <span>
                   {formData.titleId
                     ? categoriesData?.data?.find(
-                        (c) => c.id === formData.titleId,
+                        (c: NewspaperCategory) => c.id === formData.titleId,
                       )?.title
                     : "Select Title"}
                 </span>
               </SelectTrigger>
               <SelectContent>
-                {categoriesData?.data?.map((cat) => (
+                {categoriesData?.data?.map((cat: NewspaperCategory) => (
                   <SelectItem key={cat.id} value={String(cat.id)}>
                     {cat.title}
                   </SelectItem>
