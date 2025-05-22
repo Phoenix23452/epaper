@@ -22,7 +22,7 @@
 src/prisma/app/
 src/prisma/migrations
 
-/public/media/*
+/public/media/
 # production
 /build
 

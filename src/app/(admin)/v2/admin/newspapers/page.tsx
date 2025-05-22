@@ -1,5 +1,6 @@
 "use client";
 import AdminContainer from "@/components/admin/AdminContainer";
+import NewsPages from "@/components/admin/NewsPages";
 import TmpCleaner from "@/components/admin/TmpCleaner";
 import { DatePicker } from "@/components/DatePicker";
 import PDFUploader from "@/components/PDFUploader";
@@ -17,6 +18,10 @@ export default function Page() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     return tomorrow;
+  });
+
+  const formattedDate = selectedDate?.toLocaleDateString("en-CA", {
+    timeZone: "Asia/Kolkata",
   });
 
   return (
@@ -47,8 +52,10 @@ export default function Page() {
       <Separator className="my-6" />
 
       <CardContent>
+        {/* NewsPages */}
+        <NewsPages date={formattedDate} />
         <>
-          <PDFUploader date={selectedDate} />
+          <PDFUploader date={formattedDate} />
         </>
       </CardContent>
     </AdminContainer>

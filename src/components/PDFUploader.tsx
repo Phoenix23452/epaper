@@ -18,7 +18,7 @@ type ThumbnailData = {
   thumbnailUrl: string;
 };
 type Props = {
-  date: Date | undefined;
+  date: string | undefined;
 };
 
 export default function PDFUploader({ date }: Props) {
@@ -90,8 +90,6 @@ export default function PDFUploader({ date }: Props) {
 
     setLoading(true);
     try {
-      const date = new Date().toISOString().split("T")[0];
-
       const res = await fetch("/api/v9/pdf-uploads/save-selections", {
         method: "POST",
         body: JSON.stringify({

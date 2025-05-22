@@ -9,7 +9,11 @@ export default function NewspaperCategory() {
     useUpdateNewspaperCategoryMutation,
     useDeleteNewspaperCategoryMutation,
   } = hooks;
-  const { data } = useGetAllNewspaperCategoryQuery();
+  const { data } = useGetAllNewspaperCategoryQuery({
+    orderBy: {
+      order: "asc", // or "desc"
+    },
+  });
   const [create] = useCreateNewspaperCategoryMutation();
   const [update] = useUpdateNewspaperCategoryMutation();
   const [remove] = useDeleteNewspaperCategoryMutation();

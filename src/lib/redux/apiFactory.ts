@@ -3,19 +3,19 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export function createGenericAPI<T extends string>({
   reducerPath,
-  tagType,
+  tagTypes,
   baseUrl,
   endpoints,
 }: {
   reducerPath: T;
-  tagType: string;
+  tagTypes: string[];
   baseUrl: string;
   endpoints: (builder: any) => any;
 }) {
   return createApi({
     reducerPath,
     baseQuery: fetchBaseQuery({ baseUrl }),
-    tagTypes: [tagType],
+    tagTypes,
     endpoints,
   });
 }

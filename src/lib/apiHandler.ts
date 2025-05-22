@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 import { parseQueryParams } from "@/lib/queryParser"; // Parses query parameters like where/include/take/orderBy
 import { schemaRegistry } from "@/lib/validators"; // Central registry for all Zod validation schemas
 import { NextError, NextSuccess } from "./apiResponse"; // Utility functions to standardize success/error API responses
+import { ZodObject } from "zod";
 
 /**
  * Creates list-level API handlers (GET for list, POST for creation)
@@ -112,7 +113,7 @@ export function createItemAPIHandlers<T>(repo: any, schemaKey: string) {
           );
         }
 
-        const parsed = schema.safeParse(body);
+        const parsed = (schema as ZodObject<any>).partial().safeParse(body);
         if (!parsed.success) {
           return NextError("Validation failed", parsed.error.format(), 400);
         }

@@ -9,7 +9,11 @@ export default function PageCategory() {
     useUpdatePageCategoryMutation,
     useDeletePageCategoryMutation,
   } = hooks;
-  const { data } = useGetAllPageCategoryQuery();
+  const { data } = useGetAllPageCategoryQuery({
+    orderBy: {
+      order: "asc", // or "desc"
+    },
+  });
   const [create] = useCreatePageCategoryMutation();
   const [update] = useUpdatePageCategoryMutation();
   const [remove] = useDeletePageCategoryMutation();

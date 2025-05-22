@@ -1,11 +1,13 @@
 import { type PrismaClient } from "@prisma/client/extension";
-const DEFAULT_ORDER_BY = {
-  id: "asc",
-};
 
+const DEFAULT_ORDER_BY = { id: "asc" };
 const MAX_RECORDS_LIMIT = 100;
 
-export default abstract class BaseRepository<A> {
+export default abstract class BaseRepository<
+  A,
+  CreateInput = Partial<A>,
+  UpdateInput = Partial<A>,
+> {
   constructor(protected modelClient: PrismaClient) {}
 
   getAll(options: Record<string, any> = {}): Promise<Array<A>> {
@@ -26,13 +28,13 @@ export default abstract class BaseRepository<A> {
     });
   }
 
-  create(data: Partial<A>): Promise<A> {
+  create(data: CreateInput): Promise<A> {
     return this.modelClient.create({
       data,
     });
   }
 
-  update(id: number, data: Partial<A>): Promise<A> {
+  update(id: number, data: UpdateInput): Promise<A> {
     return this.modelClient.update({
       where: { id },
       data,
