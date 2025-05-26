@@ -29,7 +29,11 @@ type Newspaper = {
 
 type PageCategory = { id: number; title: string };
 
-export default function NewspapersSection({ date }: { date: string }) {
+export default function NewspapersSection({
+  date,
+}: {
+  date: string | undefined;
+}) {
   const {
     useGetAllNewspaperQuery,
     useGetAllNewspaperCategoryQuery,
@@ -41,7 +45,7 @@ export default function NewspapersSection({ date }: { date: string }) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<{
     titleId: number | "";
-    date: string;
+    date: string | undefined;
   }>({
     titleId: "",
     date: date || "",
@@ -104,12 +108,12 @@ export default function NewspapersSection({ date }: { date: string }) {
     // If page already in newspaper, ignore
     if (newspaper.newspaperPages.some((p: NewsPage) => p.id === pageId)) return;
 
-    // Add page to newspaperPages and update
-    const updatedPageIds = [
-      ...newspaper.newspaperPages.map((p: NewsPage) => p.id),
-      pageId,
-    ];
-    await updateNewspaper({ id: newspaperId, newspaperPages: updatedPageIds });
+    await updateNewspaper({
+      id: newspaperId,
+      newspaperPages: {
+        connect: [{ id: pageId }],
+      },
+    });
     await refetch();
   };
 
@@ -117,10 +121,12 @@ export default function NewspapersSection({ date }: { date: string }) {
   const handleRemovePage = async (newspaperId: number, pageId: number) => {
     const newspaper = data?.data?.find((n: Newspaper) => n.id === newspaperId);
     if (!newspaper) return;
-    const updatedPageIds = newspaper.newspaperPages
-      .filter((p: any) => p.id !== pageId)
-      .map((p: any) => p.id);
-    await updateNewspaper({ id: newspaperId, newspaperPages: updatedPageIds });
+    await updateNewspaper({
+      id: newspaperId,
+      newspaperPages: {
+        disconnect: [{ id: pageId }],
+      },
+    });
     await refetch();
   };
 
@@ -128,8 +134,8 @@ export default function NewspapersSection({ date }: { date: string }) {
     <section className="mt-8">
       <div className="flex items-center justify-between mb-4">
         <Select
-          value={formData.titleId === "" ? "" : String(formData.titleId)}
-          onValueChange={(v) => setFilterTitleId(v === "" ? "" : Number(v))}
+          value={filterTitleId === "" ? "all" : String(filterTitleId)}
+          onValueChange={(v) => setFilterTitleId(v === "all" ? "" : Number(v))}
         >
           <SelectTrigger className="w-52">
             <span>
@@ -141,7 +147,7 @@ export default function NewspapersSection({ date }: { date: string }) {
             </span>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Titles</SelectItem>
+            <SelectItem value="all">All Titles</SelectItem>
             {categoriesData?.data?.map((cat: NewspaperCategory) => (
               <SelectItem key={cat.id} value={String(cat.id)}>
                 {cat.title}

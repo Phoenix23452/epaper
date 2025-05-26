@@ -44,11 +44,11 @@ const { fromBuffer } = require("pdf2pic"); // install pdf2pic first: npm i pdf2p
         const cropHeight = metadata.height - cropTop * 2;
         const croppedBuffer = await image
             .extract({
-            left: cropLeft,
-            top: cropTop,
-            width: cropWidth,
-            height: cropHeight,
-        })
+                left: cropLeft,
+                top: cropTop,
+                width: cropWidth,
+                height: cropHeight,
+            })
             .toBuffer();
         // Use sharp to create full-size webp
         const fullImagePath = path.join(tmpDir, `page-${i}-full.webp`);
@@ -58,17 +58,17 @@ const { fromBuffer } = require("pdf2pic"); // install pdf2pic first: npm i pdf2p
         const { width, height } = page.getSize();
         await sharp(croppedBuffer)
             .resize({
-            width: Math.floor(width * 2),
-            height: Math.floor(height * 2),
-            fit: "inside", // 👈 preserves aspect ratio
-        })
+                width: Math.floor(width * 2),
+                height: Math.floor(height * 2),
+                fit: "inside", // 👈 preserves aspect ratio
+            })
             .webp({ quality: 100 })
             .toFile(fullImagePath);
         await sharp(croppedBuffer)
             .resize({
-            width: 200,
-            fit: "inside", // 👈 preserves aspect ratio
-        })
+                width: 200,
+                fit: "inside", // 👈 preserves aspect ratio
+            })
             .webp({ quality: 60 })
             .toFile(thumbImagePath);
         thumbnails.push({

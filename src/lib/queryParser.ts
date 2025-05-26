@@ -1,11 +1,21 @@
 function setDeepValue(obj: any, path: string[], value: any) {
   let current = obj;
-  for (let i = 0; i < path.length - 1; i++) {
+  for (let i = 0; i < path.length; i++) {
     const part = path[i];
-    current[part] = current[part] ?? {};
-    current = current[part];
+
+    if (i === path.length - 1) {
+      current[part] = value;
+    } else {
+      // 🟢 Wrap intermediate include object
+      if (!current[part]) {
+        current[part] = {};
+      }
+      if (!current[part].include) {
+        current[part].include = {};
+      }
+      current = current[part].include;
+    }
   }
-  current[path[path.length - 1]] = value;
 }
 
 export function parseQueryParams(params: Record<string, string>) {

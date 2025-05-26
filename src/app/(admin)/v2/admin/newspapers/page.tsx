@@ -1,6 +1,7 @@
 "use client";
 import AdminContainer from "@/components/admin/AdminContainer";
 import NewsPages from "@/components/admin/NewsPages";
+import NewspapersSection from "@/components/admin/NewspapersSection";
 import TmpCleaner from "@/components/admin/TmpCleaner";
 import { DatePicker } from "@/components/DatePicker";
 import PDFUploader from "@/components/PDFUploader";
@@ -57,6 +58,9 @@ export default function Page() {
         <>
           <PDFUploader date={formattedDate} />
         </>
+      </CardContent>
+      <CardContent>
+        <NewspapersSection date={formattedDate} />
       </CardContent>
     </AdminContainer>
   );

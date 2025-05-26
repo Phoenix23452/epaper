@@ -3,7 +3,6 @@ import NewspaperCategory from "@/components/admin/settings/NewspaperCategory";
 import PageCategory from "@/components/admin/settings/PageCategory";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { hooks } from "@/lib/redux/genratedHooks";
 import React from "react";
 
 export default function Page() {

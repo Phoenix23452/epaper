@@ -1,6 +1,12 @@
 import { z } from "zod";
 
 export const newspaperSchema = z.object({
-  date: z.string().min(1),
-  titleId: z.number().int().positive(),
+  titleId: z.number().optional(),
+  date: z.string().optional(),
+  newspaperPages: z
+    .object({
+      connect: z.array(z.object({ id: z.number() })).optional(),
+      disconnect: z.array(z.object({ id: z.number() })).optional(),
+    })
+    .optional(),
 });

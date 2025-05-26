@@ -103,6 +103,7 @@ export function createItemAPIHandlers<T>(repo: any, schemaKey: string) {
       try {
         const { id } = await params;
         const body = await req.json();
+        console.log("body", body);
         const schema = schemaRegistry[schemaKey];
 
         if (!schema) {
@@ -117,6 +118,7 @@ export function createItemAPIHandlers<T>(repo: any, schemaKey: string) {
         if (!parsed.success) {
           return NextError("Validation failed", parsed.error.format(), 400);
         }
+        console.log("zod parsed", parsed.data);
 
         const updated = await repo.update(Number(id), parsed.data);
         return NextSuccess("Updated successfully", updated);
