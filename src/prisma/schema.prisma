@@ -26,11 +26,11 @@ model NewsPage {
 }
 
 model Newspaper {
-  id             Int               @id @default(autoincrement())
+  id             Int                @id @default(autoincrement())
   date           String
-  titleId        Int // FK to NewspaperCategory
-  title          NewspaperCategory @relation(fields: [titleId], references: [id])
-  newspaperPages NewsPage[]        @relation("newspapers-pages")
+  titleId        Int? // FK to NewspaperCategory
+  title          NewspaperCategory? @relation(fields: [titleId], references: [id])
+  newspaperPages NewsPage[]         @relation("newspapers-pages")
 
   @@map("newspapers")
 }
