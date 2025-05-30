@@ -24,11 +24,11 @@ const items = [
     url: "/v2/admin/newspapers",
     icon: Inbox,
   },
-  // {
-  //   title: "users",
-  //   url: "/v2/admin/users",
-  //   icon: Inbox,
-  // },
+  {
+    title: "users",
+    url: "/v2/admin/users",
+    icon: Inbox,
+  },
   {
     title: "Settings",
     url: "/v2/admin/settings",
