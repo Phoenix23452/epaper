@@ -15,14 +15,14 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-
 import { slugify } from "@/lib/utils";
 import { SortableItem } from "./SortableItem";
+import { toast } from "sonner"; // <-- Make sure you have Sonner installed
+
 interface CategoryItem {
   id: number;
   title: string;
@@ -35,7 +35,7 @@ interface CategoryManagerProps {
   onCreate: (item: Omit<CategoryItem, "id">) => void;
   onUpdate: (item: CategoryItem) => void;
   onDelete: (id: number) => void;
-  onReorder: (items: CategoryItem[]) => void;
+  onReorder: (items: CategoryItem[]) => Promise<void>; // <-- make sure this is async
   label?: string;
 }
 
@@ -50,6 +50,12 @@ export function CategoryManager({
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [isSlugEdited, setIsSlugEdited] = useState(false);
+  const [localItems, setLocalItems] = useState<CategoryItem[]>(data);
+
+  // Sync local items when fresh data is received
+  useEffect(() => {
+    setLocalItems(data);
+  }, [data]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -66,19 +72,33 @@ export function CategoryManager({
     setIsSlugEdited(false);
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = async (event: any) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = data.findIndex((item) => item.id === Number(active.id));
-    const newIndex = data.findIndex((item) => item.id === Number(over.id));
+    const oldIndex = localItems.findIndex(
+      (item) => item.id === Number(active.id),
+    );
+    const newIndex = localItems.findIndex(
+      (item) => item.id === Number(over.id),
+    );
 
-    const newItems = arrayMove(data, oldIndex, newIndex).map((item, index) => ({
-      ...item,
-      order: index,
-    }));
+    const newItems = arrayMove(localItems, oldIndex, newIndex).map(
+      (item, index) => ({
+        ...item,
+        order: index,
+      }),
+    );
 
-    onReorder(newItems);
+    // Optimistically update UI
+    setLocalItems(newItems);
+
+    try {
+      await onReorder(newItems);
+      toast.success("Reordering updated");
+    } catch (error) {
+      toast.error("Failed to update order");
+    }
   };
 
   return (
@@ -119,16 +139,16 @@ export function CategoryManager({
         modifiers={[restrictToVerticalAxis]}
       >
         <SortableContext
-          items={data.map((d) => String(d.id))}
+          items={localItems.map((d) => String(d.id))}
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-2">
-            {data.length === 0 && (
+            {localItems.length === 0 && (
               <div className="text-center text-muted border border-dashed rounded-md py-6">
                 No {label.toLowerCase()}s added yet
               </div>
             )}
-            {data.map((item) => (
+            {localItems.map((item) => (
               <SortableItem
                 key={item.id}
                 id={String(item.id)}

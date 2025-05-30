@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { GripVertical, Trash2, Save } from "lucide-react";
+import { GripVertical, Trash2, Save, Pencil } from "lucide-react";
 import { useState } from "react";
 import { slugify } from "@/lib/utils";
 
@@ -36,7 +36,8 @@ export function SortableItem({
   };
 
   const handleSave = () => {
-    onUpdate({ ...item, title, slug: slug || slugify(title) });
+    const newSlug = slug.trim() || slugify(title);
+    onUpdate({ ...item, title, slug: newSlug });
     setEditing(false);
   };
 
@@ -52,35 +53,79 @@ export function SortableItem({
       </div>
 
       {editing ? (
-        <div className="flex flex-1 gap-2">
+        <div className="flex flex-1 items-center gap-2">
+          {/* Title Input - Left */}
           <Input
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              setSlug(slugify(e.target.value));
+              setSlug(slugify(e.target.value)); // Optional: auto update slug
             }}
+            className="w-1/3"
+            placeholder="Title"
           />
-          <Input value={slug} onChange={(e) => setSlug(e.target.value)} />
-          <Button onClick={handleSave} variant="outline" size="icon">
-            <Save size={16} />
-          </Button>
+
+          {/* Slug Input - Center */}
+          <Input
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            className="w-1/3"
+            placeholder="Slug"
+          />
+
+          {/* Save Button - Right */}
+          <div className="w-1/3 flex justify-end gap-1">
+            <Button onClick={handleSave} variant="outline" size="icon">
+              <Save size={16} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onDelete(item.id)}
+            >
+              <Trash2
+                size={16}
+                className="text-muted-foreground hover:text-red-500"
+              />
+            </Button>
+          </div>
         </div>
       ) : (
-        <div
-          className="flex flex-1 justify-between items-center px-2 cursor-pointer"
-          onClick={() => setEditing(true)}
-        >
-          <span className="text-sm">{item.title}</span>
-          <span className="text-xs text-muted-foreground">/{item.slug}</span>
+        <div className="flex flex-1 items-center justify-between gap-2">
+          {/* Title - Left */}
+          <span className=" w-1/3 truncate">{item.title}</span>
+
+          {/* Slug - Center */}
+          <span className="text-sm text-muted-foreground w-1/3 truncate">
+            {item.slug}
+          </span>
+
+          {/* Buttons - Right */}
+          <div className="w-1/3 flex justify-end gap-1">
+            <Button
+              onClick={() => {
+                setEditing(true);
+                setTitle(item.title);
+                setSlug(item.slug);
+              }}
+              variant="ghost"
+              size="icon"
+            >
+              <Pencil size={16} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onDelete(item.id)}
+            >
+              <Trash2
+                size={16}
+                className="text-muted-foreground hover:text-red-500"
+              />
+            </Button>
+          </div>
         </div>
       )}
-
-      <Button variant="ghost" size="sm" onClick={() => onDelete(item.id)}>
-        <Trash2
-          size={16}
-          className="text-muted-foreground hover:text-red-500"
-        />
-      </Button>
     </div>
   );
 }
