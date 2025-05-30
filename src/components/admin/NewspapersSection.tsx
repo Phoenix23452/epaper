@@ -209,7 +209,7 @@ export default function NewspapersSection({
         </DialogContent>
       </Dialog>
 
-      <div className="space-y-6 mt-6">
+      <div className="space-y-6 mt-6 min-h-8">
         {data?.data?.map((newspaper: Newspaper) => (
           <div
             key={newspaper.id}
@@ -221,7 +221,7 @@ export default function NewspapersSection({
               {newspaper.title.title} — {newspaper.date}
             </h3>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 min-h-24">
               {newspaper.newspaperPages.map((page) => (
                 <div
                   key={page.id}

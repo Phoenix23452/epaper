@@ -100,7 +100,7 @@ const NewspaperHeader = ({
         type="date"
         value={selectedDate}
         onChange={dateChangeHandler}
-        max={maxDate}
+        // max={maxDate}
         className="w-auto"
       />
 

@@ -14,21 +14,21 @@ import Link from "next/link";
 
 // Menu items.
 const items = [
-  {
-    title: "Homes",
-    url: "/v2/admin",
-    icon: Home,
-  },
+  // {
+  //   title: "Homes",
+  //   url: "/v2/admin",
+  //   icon: Home,
+  // },
   {
     title: "Newspapers",
     url: "/v2/admin/newspapers",
     icon: Inbox,
   },
-  {
-    title: "users",
-    url: "/v2/admin/users",
-    icon: Inbox,
-  },
+  // {
+  //   title: "users",
+  //   url: "/v2/admin/users",
+  //   icon: Inbox,
+  // },
   {
     title: "Settings",
     url: "/v2/admin/settings",

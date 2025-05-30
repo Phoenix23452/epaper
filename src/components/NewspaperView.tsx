@@ -91,7 +91,7 @@ export default function NewspaperView({ id }: Props) {
       />
 
       <main className="container mx-auto py-6 px-4">
-        {!selectedNewspaperId || newspaper?.data[0]?.newsapaperPages === 0 ? (
+        {!selectedNewspaperId || 0 === 0 ? (
           <div className="bg-amber-50 border border-amber-200 text-amber-700 p-4 rounded-md">
             <h2 className="text-lg font-medium">No newspaper available</h2>
             <p>Please select a different date or edition.</p>
