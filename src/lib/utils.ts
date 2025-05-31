@@ -31,3 +31,10 @@ export function slugify(input: string) {
     .replace(/\s+/g, "-") // replace spaces with hyphens
     .replace(/--+/g, "-"); // remove multiple dashes
 }
+
+export function getDateString(date?: Date): string | undefined {
+  if (!date) return undefined;
+  return date.toLocaleDateString("en-CA", {
+    timeZone: "Asia/Kolkata",
+  });
+}

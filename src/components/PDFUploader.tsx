@@ -119,12 +119,7 @@ export default function PDFUploader({ date }: Props) {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <button
-            className="w-36 h-48 border-2 border-dashed border-gray-400 flex items-center justify-center text-4xl font-bold text-gray-500 hover:border-gray-600 transition rounded-md cursor-pointer"
-            aria-label="Upload PDF"
-          >
-            +
-          </button>
+          <Button>Upload Newspaper</Button>
         </DialogTrigger>
 
         <DialogContent className=" sm:max-w-6xl w-full max-h-[90vh]">

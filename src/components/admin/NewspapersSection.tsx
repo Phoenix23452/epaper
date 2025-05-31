@@ -18,16 +18,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { hooks } from "@/lib/redux/genratedHooks";
 import { toast } from "sonner";
-
-type Newspaper = {
-  id: number;
-  date: string;
-  titleId: number;
-  title: { id: number; title: string };
-  newspaperPages: { id: number; thumbnail: string }[];
-};
-
-type PageCategory = { id: number; title: string };
+import { FileX2, LoaderCircle, Pencil, Trash2 } from "lucide-react";
+import { DatePicker } from "@/components/ui/date-picker";
+import { getDateString } from "@/lib/utils";
+import { title } from "process";
+import { CardTitle } from "../ui/card";
+import { Separator } from "../ui/separator";
 
 export default function NewspapersSection({
   date,
@@ -39,16 +35,21 @@ export default function NewspapersSection({
     useGetAllNewspaperCategoryQuery,
     useCreateNewspaperMutation,
     useUpdateNewspaperMutation,
+    useDeleteNewspaperMutation,
   } = hooks;
 
   const [filterTitleId, setFilterTitleId] = useState<number | "">("");
   const [open, setOpen] = useState(false);
+  const [selectedNewspaperId, setSelectedNewspaperId] = useState<number | null>(
+    null,
+  );
+
   const [formData, setFormData] = useState<{
     titleId: number | "";
-    date: string | undefined;
+    date: Date | undefined;
   }>({
     titleId: "",
-    date: date || "",
+    date: date ? new Date(date) : undefined,
   });
 
   // Fetch newspapers with filter and include pages
@@ -56,41 +57,89 @@ export default function NewspapersSection({
     filterTitleId
       ? {
           where: { date, titleId: filterTitleId },
-          include: { newspaperPages: true, title: true },
+          include: {
+            newspaperPages: {
+              title: true,
+            },
+            title: true,
+          },
         }
-      : { where: { date }, include: { newspaperPages: true, title: true } },
+      : {
+          where: { date },
+          include: {
+            newspaperPages: {
+              title: true,
+            },
+            title: true,
+          },
+        },
   ) ?? { data: [], refetch: () => {} };
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setLoading(false), 8000);
+    if (data?.data) {
+      clearTimeout(timeout);
+      setLoading(false);
+    }
+    return () => clearTimeout(timeout);
+  }, [data]);
 
   // Get newspaper categories (titles)
   const { data: categoriesData } = useGetAllNewspaperCategoryQuery();
 
   const [createNewspaper] = useCreateNewspaperMutation();
   const [updateNewspaper] = useUpdateNewspaperMutation();
+  const [deleteNewspaper] = useDeleteNewspaperMutation();
 
   // Open add modal and reset form
   const openAddModal = () => {
-    setFormData({ titleId: "", date });
+    setFormData({ titleId: "", date: date ? new Date(date) : undefined });
+    setSelectedNewspaperId(null); // reset
     setOpen(true);
   };
 
-  // Create newspaper handler
-  const handleCreate = async () => {
+  const handleSave = async () => {
     if (!formData.titleId) return toast.info("Select title");
-    // One title per date allowed: check if exists
-    const exists = data?.data?.some(
-      (n: Newspaper) =>
-        n.titleId === formData.titleId && n.date === formData.date,
-    );
-    if (exists) {
+
+    const sameComboExists = data?.data?.some((n: Newspaper) => {
+      return (
+        n.titleId === formData.titleId &&
+        n.date === getDateString(formData.date) &&
+        n.id !== selectedNewspaperId // Exclude current newspaper in case of update
+      );
+    });
+
+    if (sameComboExists) {
       toast.info("Newspaper with this title already exists for the date");
       return;
     }
-    await createNewspaper({
-      date: formData.date,
-      titleId: Number(formData.titleId),
-    });
+
+    if (selectedNewspaperId) {
+      // Update existing newspaper
+      await updateNewspaper({
+        id: selectedNewspaperId,
+        titleId: Number(formData.titleId),
+        date: getDateString(formData.date),
+      });
+      toast.success("Newspaper updated");
+    } else {
+      // Create new newspaper
+      await createNewspaper({
+        date: getDateString(formData.date),
+        titleId: Number(formData.titleId),
+      });
+      toast.success("Newspaper created");
+    }
+
     await refetch();
     setOpen(false);
+  };
+  const handleDelete = async (id: number) => {
+    const { data: response } = await deleteNewspaper(id);
+    if (response?.success) toast.success(response?.message);
+    await refetch();
   };
 
   // Handle drop page onto newspaper card
@@ -106,7 +155,10 @@ export default function NewspapersSection({
     if (!newspaper) return;
 
     // If page already in newspaper, ignore
-    if (newspaper.newspaperPages.some((p: NewsPage) => p.id === pageId)) return;
+    if (newspaper.newspaperPages.some((p: NewsPage) => p.id === pageId)) {
+      toast.info("Already Exists");
+      return;
+    }
 
     await updateNewspaper({
       id: newspaperId,
@@ -131,33 +183,41 @@ export default function NewspapersSection({
   };
 
   return (
-    <section className="mt-8">
-      <div className="flex items-center justify-between mb-4">
-        <Select
-          value={filterTitleId === "" ? "all" : String(filterTitleId)}
-          onValueChange={(v) => setFilterTitleId(v === "all" ? "" : Number(v))}
-        >
-          <SelectTrigger className="w-52">
-            <span>
-              {filterTitleId
-                ? categoriesData?.data?.find(
-                    (c: BaseCategory) => c.id === filterTitleId,
-                  )?.title
-                : "Filter by title"}
-            </span>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Titles</SelectItem>
-            {categoriesData?.data?.map((cat: NewspaperCategory) => (
-              <SelectItem key={cat.id} value={String(cat.id)}>
-                {cat.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <section className="mt-6  ">
+      <div className="flex items-center px-6 justify-between mb-4">
+        <CardTitle className="text-2xl font-medium">
+          Available Newspapers
+        </CardTitle>
+        <div className="flex items-center gap-4">
+          <Select
+            value={filterTitleId === "" ? "all" : String(filterTitleId)}
+            onValueChange={(v) =>
+              setFilterTitleId(v === "all" ? "" : Number(v))
+            }
+          >
+            <SelectTrigger className="w-52">
+              <span>
+                {filterTitleId
+                  ? categoriesData?.data?.find(
+                      (c: BaseCategory) => c.id === filterTitleId,
+                    )?.title
+                  : "Filter by Title"}
+              </span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Titles</SelectItem>
+              {categoriesData?.data?.map((cat: NewspaperCategory) => (
+                <SelectItem key={cat.id} value={String(cat.id)}>
+                  {cat.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Button onClick={openAddModal}>Add Newspaper</Button>
+          <Button onClick={openAddModal}>Add Newspaper</Button>
+        </div>
       </div>
+      <Separator className="my-8" />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
@@ -166,15 +226,12 @@ export default function NewspapersSection({
           </DialogHeader>
           <div className="space-y-4">
             <label className="block text-sm font-medium">Date</label>
-            <Input
-              type="date"
-              value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
-              className="w-full"
-            />
 
+            <DatePicker
+              className="w-full  "
+              value={formData.date}
+              onChange={(date) => setFormData({ ...formData, date })}
+            />
             <label className="block text-sm font-medium">Title</label>
             <Select
               value={formData.titleId === "" ? "" : String(formData.titleId)}
@@ -204,47 +261,118 @@ export default function NewspapersSection({
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCreate}>Save</Button>
+            <Button onClick={handleSave}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <div className="space-y-6 mt-6 min-h-8">
-        {data?.data?.map((newspaper: Newspaper) => (
-          <div
-            key={newspaper.id}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => handleDrop(e, newspaper.id)}
-            className="border p-4 rounded-lg bg-gray-50 w-full cursor-pointer"
-          >
-            <h3 className="font-semibold mb-2">
-              {newspaper.title.title} — {newspaper.date}
-            </h3>
-
-            <div className="flex flex-wrap gap-2 min-h-24">
-              {newspaper.newspaperPages.map((page) => (
-                <div
-                  key={page.id}
-                  className="relative w-20 h-28 border rounded overflow-hidden"
-                >
-                  <img
-                    src={page.thumbnail}
-                    alt="page thumb"
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
-                  <button
-                    onClick={() => handleRemovePage(newspaper.id, page.id)}
-                    className="absolute top-0 right-0 bg-red-600 text-white rounded-bl px-1 text-xs"
-                    aria-label="Remove page"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+      <div className="space-y-6 px-6 mt-6 min-h-12">
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="flex flex-col items-center text-gray-500 animate-pulse">
+              <LoaderCircle className="w-20 h-20 animate-spin mb-2" />
+              <span>Loading newspapers...</span>
             </div>
           </div>
-        ))}
+        ) : data?.data?.length === 0 ? (
+          <div className="flex flex-col items-center justify-center px-6 py-20 text-gray-500">
+            <FileX2 className="w-20 h-20 mb-2" />
+            <p>No newspapers available for this date.</p>
+          </div>
+        ) : (
+          data?.data?.map((newspaper: Newspaper) => (
+            <div
+              key={newspaper.id}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => handleDrop(e, newspaper.id)}
+              className="border p-4 rounded-lg bg-gray-50 w-full cursor-pointer"
+            >
+              <h3 className="font-semibold mb-2 flex justify-between items-center">
+                <span>
+                  {newspaper.title.title} — {newspaper.date}
+                </span>
+                <span className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setFormData({
+                        titleId: newspaper.titleId,
+                        date: new Date(newspaper.date),
+                      });
+                      setSelectedNewspaperId(newspaper.id); // Set ID for editing
+                      setOpen(true);
+                    }}
+                    className="text-blue-600 hover:text-blue-800"
+                    title="Edit"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      // Add delete mutation logic here
+                      handleDelete(newspaper.id);
+                    }}
+                    className="text-red-600 hover:text-red-800"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </span>
+              </h3>
+
+              <div className="flex flex-wrap gap-2 min-h-48 items-center ">
+                {newspaper.newspaperPages?.length === 0 ? (
+                  <div className="w-full flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-md py-10 text-center text-gray-500">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-10 h-10 mb-2 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    <p className="text-sm">Drop newspaper pages here</p>
+                  </div>
+                ) : (
+                  newspaper.newspaperPages?.map((page) => (
+                    <div className="border rounded" key={page.id}>
+                      <div className="relative w-32 h-48  overflow-hidden">
+                        <img
+                          src={page.thumbnail}
+                          alt="page thumb"
+                          className="w-full h-full object-cover  border-b border-b-red-700"
+                          draggable={false}
+                        />
+
+                        <button
+                          onClick={() =>
+                            handleRemovePage(newspaper.id, page.id)
+                          }
+                          className="absolute top-0 right-0 bg-red-600 text-white rounded-bl px-1 text-xs"
+                          aria-label="Remove page"
+                        >
+                          ×
+                        </button>
+                      </div>{" "}
+                      <p className="text-sm py-2 text-accent-foreground text-center">
+                        {page.title?.title || "Untitled"}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

@@ -17,12 +17,12 @@ export default function TmpCleaner() {
   const clearTmp = async () => {
     setLoading(true);
     await fetch("/api/v9/tmp/cleanup", { method: "DELETE" });
-    setSize("0 MB");
+    setSize("0.00 MB");
     setLoading(false);
   };
 
   return (
-    <Card className="px-4 max-w-md">
+    <Card className="px-2 py-2 max-w-md">
       <div className="flex gap-2">
         <Button
           onClick={fetchTmpSize}

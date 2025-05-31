@@ -35,7 +35,7 @@ interface CategoryManagerProps {
   onCreate: (item: Omit<CategoryItem, "id">) => void;
   onUpdate: (item: CategoryItem) => void;
   onDelete: (id: number) => void;
-  onReorder: (items: CategoryItem[]) => Promise<void>; // <-- make sure this is async
+  onReorder: (items: CategoryItem[]) => void; // <-- make sure this is async
   label?: string;
 }
 

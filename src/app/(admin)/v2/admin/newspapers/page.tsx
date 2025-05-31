@@ -3,7 +3,7 @@ import AdminContainer from "@/components/admin/AdminContainer";
 import NewsPages from "@/components/admin/NewsPages";
 import NewspapersSection from "@/components/admin/NewspapersSection";
 import TmpCleaner from "@/components/admin/TmpCleaner";
-import { DatePicker } from "@/components/DatePicker";
+import { DatePicker } from "@/components/ui/date-picker";
 import PDFUploader from "@/components/PDFUploader";
 import {
   CardContent,
@@ -26,42 +26,45 @@ export default function Page() {
   });
 
   return (
-    <AdminContainer
-      heading="NewsPapers"
-      secondaryChildren={
-        <DatePicker
-          value={selectedDate}
-          onChange={setSelectedDate}
-          placeholder="Enter Date "
-        />
-      }
-    >
-      <CardHeader className="my-auto">
-        <div className="flex justify-between">
-          <div>
-            <CardTitle className="text-2xl font-medium">
-              Available Pages
-            </CardTitle>
-            <CardDescription>
-              Upload PDF or drag pages to create a newspaper
-            </CardDescription>
-          </div>
-          {/* :TODO  */}
-          <TmpCleaner />
-        </div>
-      </CardHeader>
-      <Separator className="my-6" />
+    <>
+      <AdminContainer
+        heading="NewsPapers"
+        secondaryChildren={
+          <DatePicker
+            value={selectedDate}
+            onChange={setSelectedDate}
+            placeholder="Enter Date "
+          />
+        }
+      >
+        <CardHeader className="my-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-medium">
+                Available Pages
+              </CardTitle>
+              <CardDescription>
+                Upload PDF or drag pages to create a newspaper
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-4">
+              <PDFUploader date={formattedDate} />
 
-      <CardContent>
-        {/* NewsPages */}
-        <NewsPages date={formattedDate} />
-        <>
-          <PDFUploader date={formattedDate} />
-        </>
-      </CardContent>
-      <CardContent>
+              <TmpCleaner />
+            </div>
+          </div>
+        </CardHeader>
+        <Separator />
+
+        <CardContent>
+          {/* NewsPages */}
+          <NewsPages date={formattedDate} />
+        </CardContent>
+        <CardContent></CardContent>
+      </AdminContainer>
+      <AdminContainer>
         <NewspapersSection date={formattedDate} />
-      </CardContent>
-    </AdminContainer>
+      </AdminContainer>
+    </>
   );
 }
