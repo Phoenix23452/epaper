@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-
-import { format } from "date-fns";
 import { hooks } from "@/lib/redux/genratedHooks";
 import NewspaperHeader from "@/components/NewspaperHeader";
 import { useRouter } from "next/navigation";
@@ -15,15 +13,13 @@ type Props = {
 export default function NewspaperView({ id }: Props) {
   const navigate = useRouter();
   const { useGetAllNewspaperQuery } = hooks;
-  const [selectedDate, setSelectedDate] = useState(
-    format(new Date(), "yyyy-MM-dd"),
-  );
+  const [selectedDate, setSelectedDate] = useState<string | undefined>();
   const [selectedNewspaperId, setSelectedNewspaperId] = useState<number | null>(
     id ? parseInt(id) : null,
   );
   const [selectedStory, setSelectedStory] = useState<MapData | null>(null);
   // Fetch newspapers for selected date, include only 'home' pages
-  const { data: newspapers = [], isLoading } = useGetAllNewspaperQuery({
+  const { data: newspapers, isLoading } = useGetAllNewspaperQuery({
     where: { date: selectedDate },
     include: {
       newspaperPages: {
@@ -33,7 +29,7 @@ export default function NewspaperView({ id }: Props) {
     },
   });
 
-  const { data: newspaper = [] } = useGetAllNewspaperQuery({
+  const { data: newspaper } = useGetAllNewspaperQuery({
     where: { id: Number(selectedNewspaperId) },
     include: {
       newspaperPages: {
@@ -44,7 +40,17 @@ export default function NewspaperView({ id }: Props) {
     },
   });
   console.log(newspaper);
+  useEffect(() => {
+    if (newspaper?.data?.[0]?.date) {
+      setSelectedDate(newspaper.data[0].date);
+      console.log(selectedDate);
+    }
+  }, [newspaper]);
 
+  useEffect(() => {
+    console.log("Updated selectedDate:", selectedDate);
+  }, [selectedDate]);
+  console.log("date", selectedDate);
   const handleDateChange = (date: string) => {
     setSelectedDate(date);
   };
@@ -63,12 +69,6 @@ export default function NewspaperView({ id }: Props) {
     }
   };
 
-  useEffect(() => {
-    if (newspaper) {
-      setSelectedDate(newspaper.date);
-    }
-  }, [newspaper]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -83,7 +83,7 @@ export default function NewspaperView({ id }: Props) {
   return (
     <>
       <NewspaperHeader
-        newspapers={newspapers.data}
+        newspapers={newspapers?.data}
         selectedDate={selectedDate}
         selectedNewspaperId={selectedNewspaperId}
         onDateChange={handleDateChange}
@@ -91,7 +91,7 @@ export default function NewspaperView({ id }: Props) {
       />
 
       <main className="container mx-auto py-6 px-4">
-        {!selectedNewspaperId || 0 === 0 ? (
+        {!newspaper?.data[0] ? (
           <div className="bg-amber-50 border border-amber-200 text-amber-700 p-4 rounded-md">
             <h2 className="text-lg font-medium">No newspaper available</h2>
             <p>Please select a different date or edition.</p>

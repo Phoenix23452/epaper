@@ -17,7 +17,7 @@ import Image from "next/image";
 
 interface NewspaperHeaderProps {
   newspapers: Newspaper[];
-  selectedDate: string;
+  selectedDate: string | undefined;
   selectedNewspaperId: number | null;
   onDateChange: (date: string) => void;
   onNewspaperChange: (id: number) => void;
