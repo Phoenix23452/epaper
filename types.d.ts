@@ -4,7 +4,20 @@ type BaseCategory = {
   slug: string;
   order?: number;
 };
+enum Role {
+  ADMIN = "ADMIN",
+  EDITOR = "EDITOR",
+}
 
+type User = {
+  id: number;
+  email: string;
+  name: string;
+  password: string;
+  role: Role;
+  createdAt: string; // or Date if you're not serializing
+  updatedAt: string; // or Date
+};
 type PageCategory = BaseCategory & {
   newsPages?: NewsPage[];
 };
