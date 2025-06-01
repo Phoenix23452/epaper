@@ -27,8 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/workers/pdfProcessor.js",
-    "src/prisma/seed.js"
+    "src/workers/pdfProcessor.js"
   ],
   "exclude": ["node_modules"]
 }
