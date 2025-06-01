@@ -28,6 +28,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/workers/pdfProcessor.js"
-  ],
+, "src/prisma/seed.js"  ],
   "exclude": ["node_modules"]
 }

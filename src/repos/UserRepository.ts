@@ -18,6 +18,10 @@ export default class UserRepository extends BaseRepository<
     }
     return super.create(data);
   }
+  async updatePassword(id: number, password: string): Promise<User> {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return super.update(id, { password: hashedPassword });
+  }
 
   async findByEmail(email: string): Promise<User | null> {
     return this.modelClient.findUnique({

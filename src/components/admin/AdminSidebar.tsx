@@ -1,4 +1,6 @@
+"use client";
 import { Home, Inbox, Settings } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -21,7 +23,7 @@ const items = [
   // },
   {
     title: "Newspapers",
-    url: "/v2/admin/newspapers",
+    url: "/v2/admin",
     icon: Inbox,
   },
   {
@@ -36,7 +38,8 @@ const items = [
   },
 ];
 
-export function AdminSidebar({ pathname }: { pathname: string }) {
+export function AdminSidebar() {
+  const pathname = usePathname();
   return (
     <Sidebar>
       <SidebarContent>
@@ -50,7 +53,7 @@ export function AdminSidebar({ pathname }: { pathname: string }) {
                     asChild
                     className={cn(
                       pathname === item.url &&
-                        "bg-primary text-secondary hover:bg-primary",
+                        "bg-primary  text-secondary hover:bg-primary/90 hover:text-white transition-all duration-300",
                     )}
                   >
                     <Link href={item.url}>
