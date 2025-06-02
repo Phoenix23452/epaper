@@ -1,5 +1,6 @@
 // # NextAuth Config (app/api/auth/[...nextauth]/route.ts)
-import NextAuth from "next-auth";
+import NextAuth, { Session, User } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import UserRepository from "@/repos/UserRepository";
 
@@ -11,7 +12,7 @@ export const authOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) return null;
         const userRepo = new UserRepository();
         const user = await userRepo.verifyPassword(
@@ -29,17 +30,23 @@ export const authOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user?: User }): Promise<JWT> {
       if (user) {
         token.id = user.id;
         token.role = user.role;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({
+      session,
+      token,
+    }: {
+      session: Session;
+      token: JWT;
+    }): Promise<Session> {
       if (token) {
         session.user.id = token.id;
         session.user.role = token.role;
