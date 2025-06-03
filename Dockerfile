@@ -15,7 +15,8 @@ RUN apk add --no-cache \
 # -- Step 1: Install dependencies only when needed
 FROM base AS deps
 
-COPY package.json package-lock.json ./
+COPY package.json ./
+COPY package-lock.json ./
 
 RUN npm i --legacy-peer-deps
 
