@@ -31,6 +31,15 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /home/deploy/app
+
+            cat <<EOF > .env
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+            EOF
+
+
             docker stop epaper || true && docker rm epaper || true
             docker build -t epaper .
-            docker run -d --name epaper -p 80:3000 epaper
+            docker run -d --name epaper -p 80:3000 \
+            -v /home/deploy/media:/app/public/media \
+            epaper
