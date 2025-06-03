@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import UserRepository from "@/repos/UserRepository";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 const updateUserSchema = z.object({
   email: z.string().email("Invalid email address").optional(),
