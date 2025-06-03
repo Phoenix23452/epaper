@@ -39,7 +39,8 @@ jobs:
 
 
             docker stop epaper || true && docker rm epaper || true
-            docker build --no-cache -t epaper .
+            docker build -t epaper .
             docker run -d --name epaper --restart unless-stopped -p 3000:3000 \
             -v /home/deploy/media:/app/public/media \
             epaper
+            docker network connect postgres_default epaper
