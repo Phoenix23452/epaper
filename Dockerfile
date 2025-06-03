@@ -51,6 +51,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+COPY --from=builder /app/dist ./dist
+
 # Ensure correct file ownership
 USER nextjs
 
