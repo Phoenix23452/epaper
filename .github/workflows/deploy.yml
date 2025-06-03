@@ -40,6 +40,6 @@ jobs:
 
             docker stop epaper || true && docker rm epaper || true
             docker build -t epaper .
-            docker run -d --name epaper -p 80:3000 \
+            docker run -d --name epaper --restart unless-stopped -p 80:3000 \
             -v /home/deploy/media:/app/public/media \
             epaper
