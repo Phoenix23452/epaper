@@ -31,7 +31,7 @@ function moveFileSafe(src: string, dest: string) {
 }
 
 export class FileService {
-  static moveSelectedPages(uuid: string, date: string, pages: number[]) {
+  static async moveSelectedPages(uuid: string, date: string, pages: number[]) {
     const tmpDir = path.join("/tmp", uuid);
     const mediaDir = path.join("public/media", date);
     const thumbDir = path.join(mediaDir, "thumbnail");
@@ -41,7 +41,7 @@ export class FileService {
 
     const movedFiles: any = [];
 
-    pages.forEach((page) => {
+    for (const page of pages) {
       const fullSrc = path.join(tmpDir, `page-${page}-full.webp`);
       const thumbSrc = path.join(tmpDir, `page-${page}-thumb.webp`);
       const fullDest = path.join(mediaDir, `${uuid}-page-${page}-full.webp`);
@@ -49,14 +49,15 @@ export class FileService {
 
       console.log(`Moving fullSrc: ${fullSrc} to ${fullDest}`);
       console.log(`Moving thumbSrc: ${thumbSrc} to ${thumbDest}`);
-      moveFileSafe(fullSrc, fullDest);
-      moveFileSafe(thumbSrc, thumbDest);
+
+      await moveFileSafe(fullSrc, fullDest);
+      await moveFileSafe(thumbSrc, thumbDest);
 
       movedFiles.push({
         image: `/media/${date}/${uuid}-page-${page}-full.webp`,
         thumbnail: `/media/${date}/thumbnail/${uuid}-page-${page}-thumb.webp`,
       });
-    });
+    }
 
     rmSync(tmpDir, { recursive: true, force: true });
     return movedFiles;

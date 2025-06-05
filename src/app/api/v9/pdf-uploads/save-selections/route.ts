@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const movedFiles: NewsPage[] = FileService.moveSelectedPages(
+    const movedFiles: NewsPage[] = await FileService.moveSelectedPages(
       uuid,
       date,
       pages,
