@@ -3,6 +3,19 @@ import fs from "fs";
 import path from "path";
 import { mkdirSync, rmSync } from "fs";
 
+function moveFileSafe(src: string, dest: string) {
+  try {
+    if (!fs.existsSync(src)) {
+      throw new Error(`Source file does not exist: ${src}`);
+    }
+    fs.copyFileSync(src, dest);
+    fs.unlinkSync(src);
+  } catch (error) {
+    console.error(`Error moving file from ${src} to ${dest}:`, error);
+    throw error;
+  }
+}
+
 export class FileService {
   static moveSelectedPages(uuid: string, date: string, pages: number[]) {
     const tmpDir = path.join("/tmp", uuid);
@@ -20,8 +33,10 @@ export class FileService {
       const fullDest = path.join(mediaDir, `${uuid}-page-${page}-full.webp`);
       const thumbDest = path.join(thumbDir, `${uuid}-page-${page}-thumb.webp`);
 
-      fs.renameSync(fullSrc, fullDest);
-      fs.renameSync(thumbSrc, thumbDest);
+      console.log(`Moving fullSrc: ${fullSrc} to ${fullDest}`);
+      console.log(`Moving thumbSrc: ${thumbSrc} to ${thumbDest}`);
+      moveFileSafe(fullSrc, fullDest);
+      moveFileSafe(thumbSrc, thumbDest);
 
       movedFiles.push({
         image: `/media/${date}/${uuid}-page-${page}-full.webp`,

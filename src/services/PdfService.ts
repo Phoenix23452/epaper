@@ -1,7 +1,5 @@
 // src/services/PdfService.ts
 import { Worker } from "worker_threads";
-import { PDFDocument } from "pdf-lib";
-import { fromBuffer } from "pdf2pic";
 import path from "path";
 
 export class PdfService {
