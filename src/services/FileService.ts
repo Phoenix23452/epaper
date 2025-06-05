@@ -10,7 +10,7 @@ function moveFileSafe(src: string, dest: string) {
 export class FileService {
   static moveSelectedPages(uuid: string, date: string, pages: number[]) {
     const tmpDir = path.join("/tmp", uuid);
-    const mediaDir = path.join("/public/media", date);
+    const mediaDir = path.join("public/media", date);
     const thumbDir = path.join(mediaDir, "thumbnail");
 
     mkdirSync(mediaDir, { recursive: true });
