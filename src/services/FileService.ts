@@ -2,7 +2,6 @@
 import fs from "fs";
 import path from "path";
 import { mkdirSync, rmSync } from "fs";
-import { format } from "date-fns";
 
 export class FileService {
   static moveSelectedPages(uuid: string, date: string, pages: number[]) {
