@@ -48,6 +48,8 @@ WORKDIR /app
 
 # Copy build artifacts
 COPY --from=deps /app/node_modules/pdf-lib ./node_modules/pdf-lib
+COPY --from=deps /app/node_modules/pako ./node_modules/pako
+
 COPY --from=deps /app/node_modules/@pdf-lib/ ./node_modules/@pdf-lib
 COPY --from=deps /app/node_modules/pdf2pic ./node_modules/pdf2pic
 
