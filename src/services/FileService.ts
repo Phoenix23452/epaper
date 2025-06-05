@@ -3,10 +3,6 @@ import fs from "fs";
 import path from "path";
 import { mkdirSync, rmSync } from "fs";
 
-function moveFileSafe(src: string, dest: string) {
-  fs.copyFileSync(src, dest); // copy
-  fs.unlinkSync(src); // delete
-}
 export class FileService {
   static moveSelectedPages(uuid: string, date: string, pages: number[]) {
     const tmpDir = path.join("/tmp", uuid);
@@ -24,8 +20,8 @@ export class FileService {
       const fullDest = path.join(mediaDir, `${uuid}-page-${page}-full.webp`);
       const thumbDest = path.join(thumbDir, `${uuid}-page-${page}-thumb.webp`);
 
-      moveFileSafe(fullSrc, fullDest);
-      moveFileSafe(thumbSrc, thumbDest);
+      fs.renameSync(fullSrc, fullDest);
+      fs.renameSync(thumbSrc, thumbDest);
 
       movedFiles.push({
         image: `/media/${date}/${uuid}-page-${page}-full.webp`,
