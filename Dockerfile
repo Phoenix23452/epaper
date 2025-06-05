@@ -48,10 +48,22 @@ WORKDIR /app
 
 # Copy build artifacts
 COPY --from=deps /app/node_modules/pdf-lib ./node_modules/pdf-lib
+COPY --from=deps /app/node_modules/@pdf-lib ./node_modules/@pdf-lib
 COPY --from=deps /app/node_modules/pako ./node_modules/pako
 
-COPY --from=deps /app/node_modules/@pdf-lib/ ./node_modules/@pdf-lib
 COPY --from=deps /app/node_modules/pdf2pic ./node_modules/pdf2pic
+COPY --from=deps /app/node_modules/debug ./node_modules/debug
+COPY --from=deps /app/node_modules/gm ./node_modules/gm
+COPY --from=deps /app/node_modules/path-key ./node_modules/path-key
+COPY --from=deps /app/node_modules/cross-spawn ./node_modules/cross-spawn
+COPY --from=deps /app/node_modules/tslib ./node_modules/tslib
+COPY --from=deps /app/node_modules/which ./node_modules/which
+COPY --from=deps /app/node_modules/ms ./node_modules/ms
+COPY --from=deps /app/node_modules/isexe ./node_modules/isexe
+COPY --from=deps /app/node_modules/array-parallel ./node_modules/array-parallel
+COPY --from=deps /app/node_modules/array-series ./node_modules/array-series
+COPY --from=deps /app/node_modules/shebang-command ./node_modules/shebang-command
+COPY --from=deps /app/node_modules/shebang-regex ./node_modules/shebang-regex
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
