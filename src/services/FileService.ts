@@ -8,8 +8,22 @@ function moveFileSafe(src: string, dest: string) {
     if (!fs.existsSync(src)) {
       throw new Error(`Source file does not exist: ${src}`);
     }
-    fs.copyFileSync(src, dest);
-    fs.unlinkSync(src);
+
+    const readStream = fs.createReadStream(src);
+    const writeStream = fs.createWriteStream(dest);
+
+    return new Promise<void>((resolve, reject) => {
+      readStream.on("error", reject);
+      writeStream.on("error", reject);
+      writeStream.on("finish", () => {
+        fs.unlink(src, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      readStream.pipe(writeStream);
+    });
   } catch (error) {
     console.error(`Error moving file from ${src} to ${dest}:`, error);
     throw error;
