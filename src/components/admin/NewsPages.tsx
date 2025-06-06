@@ -93,7 +93,7 @@ export default function NewsPages({ date }: { date: string | undefined }) {
               }
               className="w-44 cursor-pointer border rounded-lg overflow-hidden relative"
             >
-              <Image
+              <img
                 src={page.thumbnail}
                 alt="thumb"
                 width={176}
