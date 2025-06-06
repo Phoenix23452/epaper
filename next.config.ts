@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    loader: "default",
+    path: "/media/", // base path for images
     domains: ["epaper.shahtimesnews.com"],
   },
 };
