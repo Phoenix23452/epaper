@@ -1,9 +1,9 @@
 // src/services/FileService.ts
-import fs from "fs";
+import fs, { chmodSync } from "fs";
 import path from "path";
 import { mkdirSync, rmSync } from "fs";
 
-function moveFileSafe(src: string, dest: string) {
+async function moveFileSafe(src: string, dest: string) {
   try {
     if (!fs.existsSync(src)) {
       throw new Error(`Source file does not exist: ${src}`);
@@ -16,10 +16,15 @@ function moveFileSafe(src: string, dest: string) {
       readStream.on("error", reject);
       writeStream.on("error", reject);
       writeStream.on("finish", () => {
-        fs.unlink(src, (err) => {
-          if (err) reject(err);
-          else resolve();
-        });
+        try {
+          chmodSync(dest, 0o644); // ✅ Set permission after file is written
+          fs.unlink(src, (err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        } catch (chmodErr) {
+          reject(chmodErr);
+        }
       });
 
       readStream.pipe(writeStream);
