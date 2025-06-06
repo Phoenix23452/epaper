@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    domains: ["epaper.shahtimesnews.com"],
+  },
 };
 
 export default nextConfig;
