@@ -41,8 +41,8 @@ ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
 # Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1005 deployusers && \
+    adduser --system --uid 1001 --ingroup deployusers nextjs
 
 WORKDIR /app
 
