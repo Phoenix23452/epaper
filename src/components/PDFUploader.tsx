@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { Loader2, X } from "lucide-react";
+import { hooks } from "@/lib/redux/genratedHooks";
 
 type ThumbnailData = {
   page: number;
@@ -27,6 +28,15 @@ export default function PDFUploader({ date }: Props) {
   const [uuid, setUuid] = useState<string | null>(null);
   const [thumbnails, setThumbnails] = useState<ThumbnailData[]>([]);
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
+
+  const { useGetAllNewsPageQuery } = hooks;
+  const { refetch } = useGetAllNewsPageQuery(
+    {
+      where: { date },
+      include: { mapData: true, title: true },
+    },
+    { skip: true }, // Prevent auto-fetching
+  );
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -106,6 +116,7 @@ export default function PDFUploader({ date }: Props) {
         setThumbnails([]);
         setSelectedPages(new Set());
         setOpen(false);
+        await refetch(); // Manually re-fetch the news page data
       } else {
         toast.error(data.error?.summary || "Save failed");
       }

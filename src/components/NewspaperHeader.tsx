@@ -128,7 +128,7 @@ const NewspaperHeader = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             {/* <h1 className="text-2xl font-bold">Shah Times</h1> */}
-            <Image
+            <img
               src={"/epaper-logo.webp"}
               width={200}
               height={0}

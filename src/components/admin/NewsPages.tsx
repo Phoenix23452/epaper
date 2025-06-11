@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { hooks } from "@/lib/redux/genratedHooks";
-import Image from "next/image";
 
 import ImageMapper from "./ImageMapper";
 import { ScrollArea } from "../ui/scroll-area";
