@@ -35,7 +35,7 @@ export default function PDFUploader({ date }: Props) {
       where: { date },
       include: { mapData: true, title: true },
     },
-    { skip: true }, // Prevent auto-fetching
+    { skip: !date }, // Prevent auto-fetching
   );
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
