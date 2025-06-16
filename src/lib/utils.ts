@@ -1,4 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
+import { existsSync } from "fs";
+import { unlink } from "fs/promises";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -37,4 +39,18 @@ export function getDateString(date?: Date): string | undefined {
   return date.toLocaleDateString("en-CA", {
     timeZone: "Asia/Kolkata",
   });
+}
+export async function deleteFile(filePath: string): Promise<void> {
+  try {
+    if (existsSync(filePath)) {
+      await unlink(filePath);
+      console.log(`Deleted file: ${filePath}`);
+    } else {
+      console.warn(`File not found, skipping: ${filePath}`);
+    }
+  } catch (error) {
+    console.error(`Failed to delete file: ${filePath}`, error);
+    // Optional: throw or silently fail
+    throw new Error(`Error deleting file: ${filePath}`);
+  }
 }

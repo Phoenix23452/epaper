@@ -28,6 +28,7 @@ COPY . .
 COPY src/prisma ./src/prisma
 
 # Generate Prisma client before build
+RUN npx prisma db push
 RUN npx prisma generate
 
 RUN npm run build

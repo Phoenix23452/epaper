@@ -88,7 +88,7 @@ model MapData {
   title        String?
   croppedImage String?
   newsPageId   Int
-  newsPage     NewsPage @relation(fields: [newsPageId], references: [id])
+  newsPage     NewsPage @relation(fields: [newsPageId], references: [id], onDelete: Cascade)
 
   @@map("map-data")
 }
